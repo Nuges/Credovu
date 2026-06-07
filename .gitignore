@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Production build output
+dist/
+
+# Environmental configurations (contains sensitive private keys)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs.json
+decisions.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

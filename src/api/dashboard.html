@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CREDOVU — Settlement Control Center</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --sidebar-bg: #ffffff;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      
+      --primary: #3b82f6; /* Clean SaaS Blue */
+      --primary-hover: #2563eb;
+      --primary-light: #f0fdf4;
+      
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --success-text: #065f46;
+      
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --danger-text: #991b1b;
+      
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --warning-text: #92400e;
+      
+      --info: #0ea5e9;
+      --info-bg: #f0f9ff;
+      --info-text: #0369a1;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.03), 0 4px 6px -2px rgba(0, 0, 0, 0.01);
+      
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Layout structure */
+    .app-layout {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    aside.sidebar {
+      width: 260px;
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .brand-area {
+      padding: 0 1.5rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background-color: var(--primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+    }
+
+    .brand-details h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-details p {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0 1.5rem 0.5rem 1.5rem;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 1.5rem;
+      padding: 0 0.75rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.75rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      transition: background-color 0.15s ease, color 0.15s ease;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background-color: #f8fafc;
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background-color: var(--info-bg);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-static-box {
+      margin: 0 0.75rem;
+      padding: 0.75rem;
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .nav-static-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-secondary);
+    }
+
+    .nav-static-val {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Main Content Area */
+    main.main-content {
+      flex-grow: 1;
+      padding: 2rem 2.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-title h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .page-title p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.15rem;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 99px;
+      padding: 0.55rem 1rem 0.55rem 2.25rem;
+      font-size: 0.85rem;
+      width: 260px;
+      color: var(--text-primary);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .search-wrapper::before {
+      content: '🔍';
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .top-slot-tracker {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.6; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.6; }
+    }
+
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: 1.5px solid var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .profile-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .profile-role {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* Metrics Row */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .metric-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-icon {
+      font-size: 1.1rem;
+    }
+
+    .metric-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0.25rem 0;
+    }
+
+    .metric-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .trend-indicator {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+
+    .trend-up {
+      background-color: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .trend-info {
+      background-color: var(--info-bg);
+      color: var(--info-text);
+    }
+
+    /* Two Column Layout */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .card-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.15rem;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Form Layouts */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .form-row-split {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .form-control {
+      width: 100%;
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      background-color: #ffffff;
+    }
+
+    .select-control {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+      background-position: right 0.75rem center;
+      background-repeat: no-repeat;
+      background-size: 1.25rem;
+      padding-right: 2.25rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+      font-family: inherit;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    table.data-table th {
+      padding: 0.75rem 1.25rem;
+      background-color: #f8fafc;
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.data-table td {
+      padding: 0.95rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.data-table tr:hover td {
+      background-color: #f8fafc;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.5rem;
+      border-radius: 99px;
+      font-size: 0.725rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-success {
+      background-color: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .badge-danger {
+      background-color: var(--danger-bg);
+      color: var(--danger-text);
+    }
+
+    .badge-warning {
+      background-color: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    .badge-info {
+      background-color: var(--info-bg);
+      color: var(--info-text);
+    }
+
+    /* Detail / Action triggers */
+    .btn-detail {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.825rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .btn-detail:hover {
+      text-decoration: underline;
+    }
+
+    /* Modal dialog */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 92%;
+      max-width: 580px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.97);
+      transition: transform 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .modal-close {
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      background-color: #f1f5f9;
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .modal-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .detail-card {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .detail-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-value {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+
+    .detail-value.monospace {
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+
+    /* Timeline component */
+    .timeline {
+      position: relative;
+      margin-left: 0.5rem;
+      padding-left: 1.25rem;
+      border-left: 2px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .timeline-node {
+      position: relative;
+    }
+
+    .timeline-node::before {
+      content: '';
+      position: absolute;
+      left: calc(-1.25rem - 5px);
+      top: 5px;
+      width: 8px;
+      height: 8px;
+      background-color: var(--text-muted);
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 2px var(--border-color);
+    }
+
+    .timeline-node.success::before {
+      background-color: var(--success);
+      box-shadow: 0 0 0 2px var(--success-bg);
+    }
+
+    .timeline-node.danger::before {
+      background-color: var(--danger);
+      box-shadow: 0 0 0 2px var(--danger-bg);
+    }
+
+    .timeline-time {
+      font-size: 0.725rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .timeline-text {
+      font-size: 0.825rem;
+      color: var(--text-primary);
+      margin-top: 0.15rem;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toast {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--primary);
+      padding: 0.95rem 1.25rem;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(150%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 280px;
+      max-width: 340px;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    .toast-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .toast-desc {
+      font-size: 0.775rem;
+      color: var(--text-secondary);
+    }
+
+    /* Progress bar charts in sidebar/columns */
+    .progress-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.775rem;
+      font-weight: 500;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background-color: #f1f5f9;
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: var(--primary);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .progress-bar-fill.warning {
+      background-color: var(--warning);
+    }
+
+    /* Mobile Header & Responsive styling */
+    .mobile-header {
+      display: none;
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1.25rem;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .menu-toggle {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+    }
+    
+    .menu-toggle:hover {
+      background-color: #f1f5f9;
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.3);
+      backdrop-filter: blur(2px);
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    @media (max-width: 992px) {
+      body {
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+      .app-layout {
+        flex-direction: column;
+        min-height: auto;
+      }
+      .mobile-header {
+        display: flex;
+      }
+      aside.sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        box-shadow: var(--shadow-lg);
+        height: 100%;
+        width: 260px;
+      }
+      aside.sidebar.active {
+        transform: translateX(0);
+      }
+      .sidebar-overlay.active {
+        display: block;
+      }
+      main.main-content {
+        padding: 1.25rem;
+        gap: 1.25rem;
+        overflow-y: visible;
+      }
+      .top-bar {
+        display: none; /* Hide desktop top-bar */
+      }
+      .metrics-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .metrics-row {
+        grid-template-columns: 1fr;
+      }
+      .form-row-split {
+        grid-template-columns: 1fr;
+      }
+      /* Collapse Table into cleaner Mobile Card List */
+      table.data-table thead {
+        display: none;
+      }
+      table.data-table, 
+      table.data-table tbody, 
+      table.data-table tr, 
+      table.data-table td {
+        display: block;
+        width: 100%;
+      }
+      table.data-table tr {
+        border-bottom: 8px solid #f1f5f9;
+        padding: 0.75rem 0;
+        background-color: #ffffff;
+      }
+      table.data-table td {
+        border-bottom: none;
+        padding: 0.4rem 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      table.data-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+      .modal {
+        width: 95%;
+        padding: 0.5rem;
+      }
+      .modal-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Mobile Top Bar Header -->
+  <div class="mobile-header">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="brand-area" style="padding: 0; border: none; margin: 0;">
+      <div class="brand-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">C</div>
+      <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: #0f172a; margin-left: 0.5rem;">Credovu</h1>
+    </div>
+    <div class="top-slot-tracker" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; box-shadow: none;">
+      <div class="status-dot"></div>
+      <span id="header-slot-mobile" style="font-family: monospace; font-weight: 600;">0</span>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-area">
+        <div class="brand-icon">C</div>
+        <div class="brand-details">
+          <h1>Credovu</h1>
+          <p>Solana Reliability Layer</p>
+        </div>
+      </div>
+      
+      <div class="sidebar-section-title">Settlement Engine</div>
+      <nav class="nav-list">
+        <a class="nav-item active" href="#" onclick="closeSidebarMobile()">
+          <span>📊</span> Dashboard
+        </a>
+        <a class="nav-item" href="#transactions-section" onclick="closeSidebarMobile()">
+          <span>💸</span> Transactions Feed
+        </a>
+        <a class="nav-item" href="#controller-section" onclick="closeSidebarMobile()">
+          <span>⚙️</span> Operational Controller
+        </a>
+      </nav>
+
+      <div class="sidebar-section-title">Network Monitor</div>
+      <div class="nav-list">
+        <div class="nav-static-box">
+          <div class="nav-static-row">
+            <span>Cluster:</span>
+            <span class="nav-static-val">Devnet</span>
+          </div>
+          <div class="nav-static-row">
+            <span>Execution:</span>
+            <span class="nav-static-val" id="execution-mode-label">Mock</span>
+          </div>
+          <div class="nav-static-row">
+            <span>Block Engine:</span>
+            <span class="nav-static-val" id="jito-status-label">Active</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <div class="page-title">
+          <h2>Settlement Dashboard</h2>
+          <p>Real-time slot streaming & AI optimization feedback loops</p>
+        </div>
+        
+        <div class="top-controls">
+          <div class="search-wrapper">
+            <input type="text" class="search-input" placeholder="Search transaction ID, wallet..." id="search-input" onkeyup="filterTransactions()">
+          </div>
+          
+          <div class="top-slot-tracker">
+            <div class="status-dot"></div>
+            <span style="color: var(--text-secondary); font-weight: 500;">Slot:</span>
+            <strong id="header-slot" style="font-family: monospace; color: #0f172a;">250000000</strong>
+          </div>
+          
+          <div class="profile-card">
+            <div class="avatar-circle">SO</div>
+            <div class="profile-info">
+              <span class="profile-name">Superteam Operator</span>
+              <span class="profile-role">Validator Admin</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics Widgets -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>Settlement Success</span>
+            <span class="metric-icon">📈</span>
+          </div>
+          <div class="metric-val" id="success-rate">0%</div>
+          <div class="metric-footer">
+            <span class="trend-indicator trend-up">✓ Active</span>
+            <span>Finalized / Total</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>Logs Count</span>
+            <span class="metric-icon">📁</span>
+          </div>
+          <div class="metric-val" id="total-submitted">0</div>
+          <div class="metric-footer">
+            <span class="trend-indicator trend-info">Recent</span>
+            <span>Stored log records</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>Average Latency</span>
+            <span class="metric-icon">⏱️</span>
+          </div>
+          <div class="metric-val" id="avg-latency">0ms</div>
+          <div class="metric-footer">
+            <span>Submit to finalization</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>Avg Jito Tip Paid</span>
+            <span class="metric-icon">💎</span>
+          </div>
+          <div class="metric-val" id="avg-tip">0 SOL</div>
+          <div class="metric-footer">
+            <span>MEV auction payments</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-Column Interactive Workspace -->
+      <div class="content-grid">
+        
+        <!-- Left: Transactions Table Card -->
+        <div class="column" style="display: flex; flex-direction: column; gap: 2rem;">
+          
+          <div class="card" id="transactions-section">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Settlement & Lifecycle Logs</h3>
+                <p class="card-subtitle">Showing transaction commitments through processed, confirmed, and finalized levels</p>
+              </div>
+            </div>
+            
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Recipient</th>
+                    <th>Transfer (SOL)</th>
+                    <th>Jito Tip</th>
+                    <th>Settlement Slot</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="transactions-tbody">
+                  <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                      Loading logs from settlement records...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Actions & Congestion Widgets -->
+        <div class="column" style="display: flex; flex-direction: column; gap: 2rem;">
+          
+          <!-- Controller Forms Card -->
+          <div class="card" id="controller-section">
+            <div class="card-header">
+              <h3 class="card-title">Settlement Controller</h3>
+            </div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 1.5rem;">
+              
+              <!-- Tab Form: Submit Transfer -->
+              <form id="submit-form" onsubmit="submitTransaction(event)">
+                <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.75rem; text-transform: uppercase;">Dispatch Transaction</h4>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="recipient">Recipient Address</label>
+                    <input type="text" class="form-control" id="recipient" value="Cw8CFyM99Hi47qcrgHA7dudmK49oAMdghqF76X9bd1yA" required>
+                  </div>
+                  <div class="form-row-split">
+                    <div class="form-group">
+                      <label for="amount">Amount (Lamports)</label>
+                      <input type="number" class="form-control" id="amount" value="1000000" required>
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                      <button class="btn btn-primary" type="submit" id="submit-btn" style="width: 100%;">Send</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
+              <hr style="border: none; border-top: 1px solid var(--border-color);">
+
+              <!-- Tab Form: Inject Failure Recovery -->
+              <form id="simulate-form" onsubmit="simulateFailure(event)">
+                <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.75rem; text-transform: uppercase;">Simulate Failure & Recovery</h4>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="failure-type">Failure Classification</label>
+                    <select class="form-control select-control" id="failure-type" required>
+                      <option value="BlockhashExpired">BlockhashExpired (Immediate Refresh)</option>
+                      <option value="FeeTooLow">FeeTooLow (Tip Escalation 1.5x)</option>
+                      <option value="ComputeBudgetExceeded">ComputeBudgetExceeded</option>
+                      <option value="BundleDropped">BundleDropped</option>
+                      <option value="LeaderMissedSlot">LeaderMissedSlot</option>
+                    </select>
+                  </div>
+                  <div class="form-row-split">
+                    <div class="form-group">
+                      <label for="sim-amount">Amount (Lamports)</label>
+                      <input type="number" class="form-control" id="sim-amount" value="500000" required>
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                      <button class="btn btn-secondary" type="submit" id="sim-btn" style="width: 100%; border-color: var(--border-color);">Inject</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
+
+          <!-- Network Signals Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Validator Signals</h3>
+            </div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 1.25rem;">
+              
+              <div class="progress-wrapper">
+                <div class="progress-header">
+                  <span style="color: var(--text-secondary);">Mempool Congestion Rate</span>
+                  <span id="congestion-label" style="font-weight: 600;">65%</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="congestion-fill" style="width: 65%;"></div>
+                </div>
+              </div>
+
+              <div class="progress-wrapper">
+                <div class="progress-header">
+                  <span style="color: var(--text-secondary);">Jito Schedule Compatibility</span>
+                  <span id="leader-compat-label" style="font-weight: 600;">Active</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="leader-compat-fill" style="width: 100%; background-color: var(--success);"></div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 1rem; font-size: 0.85rem;">
+                <span style="color: var(--text-secondary);">Dynamic Floor Updates:</span>
+                <span style="font-weight: 600; color: var(--success);">✓ Periodic (30s)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Failure Classifications Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Failure Reason Frequency</h3>
+            </div>
+            <div class="card-body" id="failures-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 1rem 0;">
+                No errors recorded.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Detailed Log Modal -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-tx-title">Transaction Details</div>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body-content">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container">
+    <div class="toast" id="toast">
+      <div class="toast-title" id="toast-title">Notification</div>
+      <div class="toast-desc" id="toast-desc">Transaction status changed.</div>
+    </div>
+  </div>
+
+  <!-- Javascript -->
+  <script>
+    let allLogs = [];
+
+    // Format timestamps nicely
+    function formatTime(isoStr) {
+      const d = new Date(isoStr);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    // Scroll smoothly to target anchor
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Toggle Mobile Sidebar Drawer
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebar-overlay').classList.toggle('active');
+    }
+
+    function closeSidebarMobile() {
+      document.getElementById('sidebar').classList.remove('active');
+      document.getElementById('sidebar-overlay').classList.remove('active');
+    }
+
+    // Update the layout widgets and metrics charts
+    async function updateDashboard() {
+      try {
+        const response = await fetch('/metrics/dashboard');
+        if (!response.ok) throw new Error('API request failed');
+        const metrics = await response.json();
+
+        // Update top-level metrics
+        document.getElementById('success-rate').innerText = `${metrics.successRate.toFixed(2)}%`;
+        document.getElementById('total-submitted').innerText = metrics.totalSubmitted;
+        document.getElementById('avg-latency').innerText = `${metrics.averageLatencyMs}ms`;
+        document.getElementById('avg-tip').innerText = `${(metrics.averageTipLamports / 1e9).toFixed(6)} SOL`;
+
+        // Update slot & network status
+        const slotText = metrics.networkStatus.currentSlot || 'Pending';
+        document.getElementById('header-slot').innerText = slotText;
+        if (document.getElementById('header-slot-mobile')) {
+          document.getElementById('header-slot-mobile').innerText = slotText;
+        }
+        
+        // Mempool Congestion Progress Bar
+        const congestion = metrics.networkStatus.congestionRate;
+        document.getElementById('congestion-label').innerText = `${congestion}%`;
+        const fill = document.getElementById('congestion-fill');
+        fill.style.width = `${congestion}%`;
+        
+        if (congestion > 70) {
+          fill.style.backgroundColor = 'var(--danger)';
+        } else if (congestion > 40) {
+          fill.style.backgroundColor = 'var(--warning)';
+        } else {
+          fill.style.backgroundColor = 'var(--primary)';
+        }
+
+        // Leader Compat
+        const isJito = metrics.networkStatus.leaderType === 'Jito';
+        document.getElementById('leader-compat-label').innerText = isJito ? 'Jito Compatible' : 'Standard Fallback';
+        document.getElementById('leader-compat-fill').style.width = isJito ? '100%' : '50%';
+        document.getElementById('leader-compat-fill').style.backgroundColor = isJito ? 'var(--success)' : 'var(--info)';
+
+        // Render failures list
+        const failuresList = document.getElementById('failures-list');
+        failuresList.innerHTML = '';
+        const types = Object.keys(metrics.failuresByType);
+        
+        let maxCount = 0;
+        types.forEach(t => { if (metrics.failuresByType[t] > maxCount) maxCount = metrics.failuresByType[t]; });
+
+        const activeTypes = types.filter(t => metrics.failuresByType[t] > 0);
+        
+        if (activeTypes.length === 0) {
+          failuresList.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 1rem 0;">No failures recorded.</div>';
+        } else {
+          activeTypes.forEach(type => {
+            const count = metrics.failuresByType[type];
+            const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
+            
+            failuresList.innerHTML += `
+              <div class="progress-wrapper">
+                <div class="progress-header">
+                  <span style="color: var(--text-secondary); font-size: 0.8rem;">${type}</span>
+                  <span style="font-weight: 600; font-size: 0.8rem;">${count}</span>
+                </div>
+                <div class="progress-bar-bg" style="height: 4px;">
+                  <div class="progress-bar-fill warning" style="width: ${pct}%; height: 100%;"></div>
+                </div>
+              </div>
+            `;
+          });
+        }
+
+      } catch (err) {
+        console.error('Failed updating dashboard metrics:', err);
+      }
+    }
+
+    // Refresh logs feed table
+    async function updateTransactionsTable() {
+      try {
+        const response = await fetch('/transactions');
+        if (!response.ok) throw new Error('Failed to fetch transactions');
+        const logs = await response.json();
+        allLogs = logs;
+
+        // Sort descending by start time
+        logs.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+
+        const tbody = document.getElementById('transactions-tbody');
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 3rem;">No transaction logs found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = logs.map(log => {
+          let badgeHtml = '<span class="badge badge-warning">Pending</span>';
+          if (log.currentState === 'FINALIZED') {
+            badgeHtml = '<span class="badge badge-success">Finalized</span>';
+          } else if (log.currentState === 'FAILED') {
+            badgeHtml = '<span class="badge badge-danger">Failed</span>';
+          }
+
+          const shortId = log.id.substring(0, 15) + '...';
+          const shortRecipient = log.recipient.substring(0, 8) + '...' + log.recipient.substring(log.recipient.length - 8);
+
+          return `
+            <tr>
+              <td data-label="Tx ID" style="font-weight: 600; color: #0f172a; font-family: monospace;">${shortId}</td>
+              <td data-label="Recipient" style="font-family: monospace; color: var(--text-secondary);">${shortRecipient}</td>
+              <td data-label="Transfer" style="font-weight: 600;">${(log.amount / 1e9).toFixed(5)} SOL</td>
+              <td data-label="Jito Tip">${(log.tipAmount / 1e9).toFixed(6)} SOL</td>
+              <td data-label="Settlement Slot" style="font-family: monospace;">${log.history[log.history.length - 1].slot || '—'}</td>
+              <td data-label="Status">${badgeHtml}</td>
+              <td data-label="Action">
+                <button class="btn-detail" onclick="openLogDetails('${log.id}')">
+                  <span>Detail</span> ➜
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Failed to update logs table:', err);
+      }
+    }
+
+    // Filter transaction logs in table
+    function filterTransactions() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      const rows = document.getElementById('transactions-tbody').getElementsByTagName('tr');
+      
+      for (let row of rows) {
+        if (row.cells.length < 2) continue; // Skip empty rows
+        const txId = row.cells[0].innerText.toLowerCase();
+        const recipient = row.cells[1].innerText.toLowerCase();
+        
+        if (txId.includes(query) || recipient.includes(query)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+    }
+
+    // Open transaction details modal
+    async function openLogDetails(txId) {
+      const log = allLogs.find(l => l.id === txId);
+      if (!log) return;
+
+      document.getElementById('modal-tx-title').innerText = `Transaction Log Info`;
+      
+      const content = document.getElementById('modal-body-content');
+      content.innerHTML = '<div style="color: var(--text-secondary); text-align: center; padding: 2rem;">Loading details...</div>';
+      
+      document.getElementById('modal-overlay').classList.add('active');
+
+      let aiDecisionHtml = '';
+      try {
+        const aiRes = await fetch(`/ai/decision/${txId}`);
+        if (aiRes.ok) {
+          const ai = await aiRes.json();
+          if (ai) {
+            aiDecisionHtml = `
+              <div class="detail-card" style="border-left: 3px solid var(--primary); background: #f0f7ff;">
+                <div class="detail-label" style="color: var(--primary);">AI Decision & Optimizer Reasoning</div>
+                <div class="detail-value" style="color: #1e3a8a; font-style: italic; line-height: 1.5; font-size: 0.85rem; font-weight: 500;">
+                  "${ai.reasoning}"
+                </div>
+                <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-secondary);">
+                  <span>Execution Confidence: <strong>${Math.round(ai.confidence * 100)}%</strong></span>
+                  <span>Delay: <strong>${ai.delay_ms}ms</strong></span>
+                  <span>Tip Bid: <strong>${(ai.recommended_tip_lamports / 1e9).toFixed(6)} SOL</strong></span>
+                </div>
+              </div>
+            `;
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch AI reasoning context', err);
+      }
+
+      const timelineHtml = log.history.map(h => {
+        let nodeClass = '';
+        if (h.state === 'FINALIZED') nodeClass = 'success';
+        if (h.state === 'FAILED') nodeClass = 'danger';
+
+        return `
+          <div class="timeline-node ${nodeClass}">
+            <div class="timeline-time">${new Date(h.timestamp).toLocaleTimeString()} | Slot height: ${h.slot || 'N/A'}</div>
+            <div class="timeline-text">Transitioned to <strong>${h.state}</strong> (latency: +${h.latencyDeltaMs}ms)</div>
+          </div>
+        `;
+      }).join('');
+
+      content.innerHTML = `
+        <div class="detail-card">
+          <div class="detail-label">Transaction ID</div>
+          <div class="detail-value monospace" style="color: var(--primary); font-weight: 600;">${log.id}</div>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-label">Solana Explorer Signature</div>
+          <div class="detail-value monospace" style="color: var(--info-text); font-size: 0.8rem;">${log.signature || 'Simulation (MOCK_MODE=TRUE)'}</div>
+        </div>
+        
+        <div class="modal-grid-2">
+          <div class="detail-card">
+            <div class="detail-label">Target Recipient Address</div>
+            <div class="detail-value monospace" style="font-size: 0.8rem;">${log.recipient}</div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-label">SOL Transfer Amount</div>
+            <div class="detail-value" style="font-weight: 600;">${(log.amount / 1e9).toFixed(5)} SOL</div>
+          </div>
+        </div>
+
+        <div class="modal-grid-2">
+          <div class="detail-card">
+            <div class="detail-label">Auction Jito Tip Fee</div>
+            <div class="detail-value" style="color: var(--success-text); font-weight: 600;">${(log.tipAmount / 1e9).toFixed(6)} SOL</div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-label">Execution Latency</div>
+            <div class="detail-value">${log.totalLatencyMs}ms</div>
+          </div>
+        </div>
+
+        ${aiDecisionHtml}
+
+        <div class="detail-card">
+          <div class="detail-label">Settlement Lifecycle Timeline</div>
+          <div class="timeline">
+            ${timelineHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('active');
+    }
+
+    // Show toast message alerts
+    function showToast(title, desc, isError = false) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-desc').innerText = desc;
+      toast.style.borderLeftColor = isError ? 'var(--danger)' : 'var(--primary)';
+      
+      toast.classList.add('active');
+      setTimeout(() => {
+        toast.classList.remove('active');
+      }, 4000);
+    }
+
+    // Submit transaction
+    async function submitTransaction(e) {
+      e.preventDefault();
+      const recipient = document.getElementById('recipient').value;
+      const amount = parseInt(document.getElementById('amount').value);
+      
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.innerText = 'Sending...';
+
+      try {
+        showToast('Transaction Dispatched', 'AI Optimizer scheduling submission time and tipping...');
+        
+        const response = await fetch('/transaction/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipient, amount })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          showToast('Settlement Settled', `State: ${data.currentState} in ${data.totalLatencyMs}ms`);
+        } else {
+          showToast('Settlement Failure', data.error || 'Server error', true);
+        }
+      } catch (err) {
+        showToast('Execution Error', err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Send';
+        updateDashboard();
+        updateTransactionsTable();
+      }
+    }
+
+    // Inject failure simulation
+    async function simulateFailure(e) {
+      e.preventDefault();
+      const failureType = document.getElementById('failure-type').value;
+      const amount = parseInt(document.getElementById('sim-amount').value);
+      const recipient = 'Cw8CFyM99Hi47qcrgHA7dudmK49oAMdghqF76X9bd1yA';
+
+      const btn = document.getElementById('sim-btn');
+      btn.disabled = true;
+      btn.innerText = 'Simulating...';
+
+      try {
+        showToast('Failure Injected', `Triggering pipeline error: ${failureType}`);
+        
+        const response = await fetch('/transaction/simulate-failure', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ failureType, recipient, amount })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          const recoveryMsg = data.currentState === 'FINALIZED' ? 'RESOLVED WITH RETRIES' : 'UNRESOLVED';
+          showToast('Simulation Resolved', `Final State: ${data.currentState} (${recoveryMsg})`);
+        } else {
+          showToast('Simulation Error', data.error || 'Server error', true);
+        }
+      } catch (err) {
+        showToast('Execution Error', err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Inject';
+        updateDashboard();
+        updateTransactionsTable();
+      }
+    }
+
+    // Check configuration mock mode status
+    async function checkExecutionMode() {
+      try {
+        const res = await fetch('/health');
+        if (res.ok) {
+          const metricsRes = await fetch('/metrics/dashboard');
+          if (metricsRes.ok) {
+            const metrics = await metricsRes.json();
+            const isMock = metrics.averageLatencyMs < 2000;
+            document.getElementById('execution-mode-label').innerText = isMock ? 'Simulation (Mock)' : 'Real Solana Devnet';
+            document.getElementById('jito-status-label').innerText = isMock ? 'Active' : 'Offline (Devnet fallback active)';
+          }
+        }
+      } catch (err) {}
+    }
+
+    // Setup update intervals
+    updateDashboard();
+    updateTransactionsTable();
+    checkExecutionMode();
+    setInterval(updateDashboard, 2000);
+    setInterval(updateTransactionsTable, 2000);
+  </script>
+</body>
+</html>
