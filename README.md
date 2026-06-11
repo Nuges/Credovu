@@ -8,20 +8,27 @@ CREDOVU is a production-quality, AI-driven transaction settlement reliability la
 
 ---
 
-## Solana Core Infrastructure Q&A (Grounded in Simulation Metrics)
+## Solana Core Infrastructure & Settlement Dynamics (Grounded in Simulation Metrics)
 
-### Q1: What does processed -> confirmed delta mean for network health?
-The `processed` state represents the local validator executing a transaction and including it in a block. The `confirmed` state represents the cluster reaching optimistic confirmation (meaning a supermajority of 2/3+ of the validator voting stake has voted on the block containing the transaction).
-* **Simulation Metrics Range**: In our deterministic simulation runtime environment, the processed-to-confirmed delta is simulated at **`1ms to 2ms`** (allowing for instant pipeline progression check), while standard Solana Mainnet conditions yield a delta of **`400ms to 800ms`**.
-* **Network Health Implications**: A widening of this delta indicates cluster voting stake desynchronization, packet drop spikes, or a high fork rate. Under normal conditions, this delta is under 1 second. If the delta widens, it indicates consensus-level network degradation or severe packet congestion between validator nodes.
+High-performance transaction settlement on Solana requires a deep understanding of network lifecycles, consensus state transitions, and the distinct behaviors of private MEV blockspace auctions compared to the public mempool.
 
-### Q2: Why is a finalized blockhash dangerous for time-sensitive transactions?
-Solana blockhashes are valid for only 150 slots (approx. 60 seconds). A block hash achieves `finalized` state only after ~31 confirmation blocks are built on top of it, which takes around 12 to 32 seconds depending on network load.
-* **Mismatched Lifecycles**: If a client relies on a **finalized blockhash** to sign new time-sensitive transactions, the blockhash is already 30 to 80 slots old by the time it is submitted. If the transaction gets delayed due to a leader miss or RPC pool congestion, it has a very narrow window (less than 70 slots) before it expires, rendering it dead. High-speed trading and settlement systems should always fetch and sign transactions with **confirmed** (optimistic) blockhashes to guarantee a full 150-slot validity lifetime.
+### 1. Network Health and Commitment Progression
+The lifecycle of a transaction moves through progressive commitment levels:
+* **Processed**: A local validator has executed the transaction and included it in a block.
+* **Confirmed**: A supermajority (2/3+) of the cluster validator voting stake has voted on the block containing the transaction (optimistic confirmation).
 
-### Q3: What happens when a Jito leader skips a slot?
-If a scheduled Jito validator skips its block production slot (due to offline state, validator crash, or network desync), any bundle submitted to that Jito block engine for that slot is dropped.
-* **No Fallback Mempool**: Jito bundles are slot-pinned and execute via a private sidecar memory pool. They do not default back to standard transaction queues. If a Jito leader skips its slot, the bundle is immediately dropped. The client must detect the skip and re-route the bundle to the next scheduled leader.
+Under standard Solana Mainnet conditions, the transition from *processed* to *confirmed* takes **`400ms to 800ms`** (simulated deterministically in our runtime at **`1ms to 2ms`**). The width of this delta acts as a real-time network health metric. A widening delta indicates cluster voting stake desynchronization, high packet drop rates, or consensus fork branches. Under severe degradation, this delta stretches beyond one second, signaling validator communication latency or consensus-level instability.
+
+### 2. Dangers of Finalized Blockhash Dependency
+Relying on a **finalized blockhash** to sign new, time-sensitive transactions is a major operational anti-pattern. 
+Solana blockhashes remain valid for exactly 150 slots (~60 seconds). However, a blockhash only reaches the *finalized* commitment level after approximately 31 confirmation blocks are built on top of it—a process that takes **`12 to 32 seconds`** depending on block times and network load.
+
+If an execution stack signs transactions using a finalized blockhash, that blockhash is already 30 to 80 slots old before the transaction is even broadcast. Any minor delay, such as temporary RPC pool congestion or slot leader skips, leaves a very narrow window before the transaction expires and is discarded. To maximize a transaction’s 150-slot validity lifetime, time-sensitive stacks should always fetch blockhashes at the **confirmed** (optimistic) commitment level.
+
+### 3. Jito Bundle Behavior and Leader Skips
+Integrating with private MEV blockspace auctions via the Jito Block Engine changes transaction routing characteristics. When a Jito bundle is packaged and submitted, it enters a private sidecar memory pool pinned to a specific scheduled leader slot. 
+
+Unlike standard transactions, **Jito bundles do not fall back to the public validator mempool**. If the scheduled Jito leader skips its block production slot due to network desynchronization, validator crash, or network fork, the Jito Block Engine drops the bundle entirely. The execution stack must actively monitor Geyser slot increments, detect the missed slot rotation, rebuild the transaction payload with a fresh blockhash if needed, and re-route the auction bundle to the next active Jito validator.
 
 ---
 

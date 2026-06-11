@@ -21,9 +21,9 @@
       --text-secondary: #475569;
       --text-muted: #94a3b8;
       
-      --primary: #3b82f6; /* Clean SaaS Blue */
-      --primary-hover: #2563eb;
-      --primary-light: #f0fdf4;
+      --primary: #61c8cf; /* Clean SaaS Teal/Cyan */
+      --primary-hover: #49aeb5;
+      --primary-light: #e6f9fa;
       
       --success: #10b981;
       --success-bg: #ecfdf5;
@@ -246,7 +246,7 @@
 
     .search-input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 3px rgba(97, 200, 207, 0.15);
     }
 
     .search-wrapper::before {
@@ -1008,9 +1008,15 @@
   <!-- Mobile Top Bar Header -->
   <div class="mobile-header">
     <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-    <div class="brand-area" style="padding: 0; border: none; margin: 0;">
-      <div class="brand-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">C</div>
-      <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: #0f172a; margin-left: 0.5rem;">Credovu</h1>
+    <div class="brand-area" style="padding: 0; border: none; margin: 0; align-items: center;">
+      <div class="logo-container" style="display: flex; align-items: center; font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; font-weight: 700; color: #0f172a; letter-spacing: -0.05em; line-height: 1;">
+        <span>Cred</span>
+        <span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 0.85em; height: 1em; margin: 0 -0.02em;">
+          <span style="width: 0.6em; height: 0.6em; border: 0.15em solid #0f172a; border-radius: 50%; display: inline-block; box-sizing: border-box;"></span>
+          <span style="position: absolute; width: 0.3em; height: 0.3em; background-color: #53cfd6; border-radius: 50%;"></span>
+        </span>
+        <span>vu</span>
+      </div>
     </div>
     <div class="top-slot-tracker" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; box-shadow: none;">
       <div class="status-dot"></div>
@@ -1022,12 +1028,16 @@
     
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
-      <div class="brand-area">
-        <div class="brand-icon">C</div>
-        <div class="brand-details">
-          <h1>Credovu</h1>
-          <p>Solana Reliability Layer</p>
+      <div class="brand-area" style="flex-direction: column; align-items: flex-start; gap: 0.25rem;">
+        <div class="logo-container" style="display: flex; align-items: center; font-family: 'Space Grotesk', sans-serif; font-size: 1.7rem; font-weight: 700; color: #0f172a; letter-spacing: -0.05em; line-height: 1;">
+          <span>Cred</span>
+          <span style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 0.85em; height: 1em; margin: 0 -0.02em;">
+            <span style="width: 0.6em; height: 0.6em; border: 0.15em solid #0f172a; border-radius: 50%; display: inline-block; box-sizing: border-box;"></span>
+            <span style="position: absolute; width: 0.3em; height: 0.3em; background-color: #53cfd6; border-radius: 50%;"></span>
+          </span>
+          <span>vu</span>
         </div>
+        <p style="font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; margin-top: 0.25rem;">Solana Reliability Layer</p>
       </div>
       
       <div class="sidebar-section-title">Settlement Engine</div>
